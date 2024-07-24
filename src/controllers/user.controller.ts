@@ -3,6 +3,7 @@ import AsyncHandler from "../Utils/asyncHandler";
 import bcryptjs from "bcryptjs";
 
 import User from "../models/user.model";
+import generateToken from "../Utils/generateToken";
 
 export const registerUser = AsyncHandler(
   async (req: Request, res: Response) => {
@@ -29,7 +30,9 @@ export const registerUser = AsyncHandler(
         });
       }
 
-      return res.status(200).json({ message: "user created" });
+      return res
+        .status(200)
+        .json({ message: "user created", token: generateToken(user._id) });
     } catch (error) {
       return res.json({
         message: "catch error user creation",
@@ -46,15 +49,15 @@ export const loginUser = AsyncHandler(async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Please fill all fields" });
     }
 
-    const user = await User.aggregate([{ $match: { email: email } }]);
+    const user = await User.findOne({ email }).select("+password");
 
-    if (!user || user.length === 0) {
+    if (!user) {
       return res.json({
         message: "user not found",
       });
     }
 
-    const comparePassword = await bcryptjs.compare(password, user[0].password);
+    const comparePassword = await user.comparePassword(password);
 
     if (!comparePassword) {
       return res.json({ message: "password not match" });
@@ -62,6 +65,7 @@ export const loginUser = AsyncHandler(async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: "Login success",
+      token: generateToken(user._id),
     });
   } catch (error) {
     return res.status(500).json({
