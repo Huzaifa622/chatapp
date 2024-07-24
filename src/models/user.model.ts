@@ -4,6 +4,7 @@ interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  pic: string;
 }
 const userSchema: Schema<IUser> = new mongoose.Schema(
   {
@@ -20,6 +21,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pic: {type:String , default:"https://icon-library.com/images/users-icon-png/users-icon-png-15.jpg"}
   },
   { timestamps: true }
 );

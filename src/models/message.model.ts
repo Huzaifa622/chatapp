@@ -4,19 +4,21 @@ interface IMessage extends Document {
   senderId: Schema.Types.ObjectId;
   content: string;
   chatroomId: Schema.Types.ObjectId;
-  date: Date;
+
 }
 
-const messageSchema: Schema<IMessage> = new Schema({
-  senderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  content: { type: String, required: true },
-  chatroomId: {
-    type: Schema.Types.ObjectId,
-    ref: "Chatroom",
-    required: true,
+const messageSchema: Schema<IMessage> = new Schema(
+  {
+    senderId: { type: Schema.Types.ObjectId, ref: "User" },
+    content: { type: String, required: true },
+    chatroomId: {
+      type: Schema.Types.ObjectId,
+      ref: "Chatroom",
+    },
+  
   },
-  date: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
-const message = mongoose.model("Message", messageSchema);
-export default message;
+const Message = mongoose.model("Message", messageSchema);
+export default Message;
